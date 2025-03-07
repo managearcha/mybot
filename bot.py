@@ -9,34 +9,46 @@ from PIL import Image
 from dotenv import load_dotenv
 load_dotenv(override=True)
 
-# Check if TOKEN and PREFIX are set
-if not getenv('TOKEN'):
-    raise ValueError("Error: TOKEN environment variable not set.")
-if not getenv('PREFIX'):
-    raise ValueError("Error: PREFIX environment variable not set.")
+PREFIX = "!"  # Define your command prefix here
+OWNER_IDS = {123456789012345678, 987654321098765432}  # Replace with actual owner IDs
 
-bot = commands.Bot(
-    command_prefix=(getenv('PREFIX')),
-    intents=discord.Intents.all()
+client = commands.Bot(
+    command_prefix=PREFIX,
+    owner_ids=OWNER_IDS,
+    intents=discord.Intents.all(),
+    help_command=None  # Disable the default help command
 )
 
-bot.remove_command('help')
+COG_FOLDER = './cogs'  # Define the folder where your cogs are located
+
+async def load_all_extensions():
+    for filename in os.listdir(COG_FOLDER):
+        if filename.endswith('.py'):
+            extension = f'cogs.{filename[:-3]}'
+            if extension not in client.extensions:
+                try:
+                    await client.load_extension(extension)
+                    print(f'Loaded extension {extension}')
+                except commands.errors.ExtensionAlreadyLoaded:
+                    print(f'Extension {extension} is already loaded.')
+                except Exception as e:
+                    print(f'Failed to load extension {extension}: {e}')
 
 extensions = [
     'cogs.games',
     'cogs.player',
     'cogs.mining',
     'cogs.help',
-    'cogs.guild'
+    'cogs.guild',
+    'cogs.gambling',
+    'cogs.gambling_helpers',  # Added new extension
+    'cogs.help_commands'  # Added new extension
 ]
 
-async def load_extensions(bot, extensions):
-    for extension in extensions:
-        await bot.load_extension(extension)
-
-@bot.event
+@client.event
 async def on_ready():
-    print(f'Logged in as {bot.user.name}')
+    print(f'Logged in as {client.user.name}')
+    await load_all_extensions()
 
 number_abbreviations = {
     1_000: 'k',
@@ -55,8 +67,8 @@ def abbreviate_number(number):
             return f'{number // value}{abbreviation}'
     return str(number)
 
-@bot.command()
-async def roll(ctx):
+@client.command()
+async def roll_dice(ctx):
     roll_result = random.randint(1, 99)
     await ctx.send(f'You rolled a {roll_result}')
     
@@ -91,6 +103,14 @@ async def roll(ctx):
     else:
         await ctx.send('You lose!')
 
+async def load_extensions(client, extensions):
+    for extension in extensions:
+        try:
+            await client.load_extension(extension)
+            print(f'Loaded extension {extension}')
+        except Exception as e:
+            print(f'Failed to load extension {extension}: {e}')
+
 async def main():
     token = getenv('TOKEN')
     if not token:
@@ -98,10 +118,10 @@ async def main():
         return
 
     try:
-        await load_extensions(bot, extensions)
-        await bot.start(token)
+        await load_all_extensions()
+        await client.start(token)
     except KeyboardInterrupt:
-        await bot.close()
+        await client.close()
 
 if __name__ == "__main__":
     try:

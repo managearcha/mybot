@@ -1,4 +1,5 @@
 from discord.ext import commands
+import random
 
 class Games(commands.Cog):
     def __init__(self, bot):
@@ -58,10 +59,10 @@ class Games(commands.Cog):
         # ...existing code...
         pass
 
-    @commands.command(name='roll_dice')  # Renamed command
-    async def roll(self, ctx):
-        # Your command implementation here
-        await ctx.send("Rolling the dice...")
+    @commands.command(name="roll_game_dice")
+    async def roll_dice(self, ctx):
+        roll_result = random.randint(1, 99)
+        await ctx.send(f'You rolled a {roll_result}')
 
     @commands.command(name='roulette')
     async def roulette(self, ctx, prediction: str, bet: str):
@@ -93,5 +94,5 @@ class Games(commands.Cog):
         # ...existing code...
         pass
 
-async def setup(bot):
-    await bot.add_cog(Games(bot))
+async def setup(client: commands.Bot):
+    await client.add_cog(Games(client))

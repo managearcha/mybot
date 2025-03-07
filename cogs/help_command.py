@@ -1,8 +1,7 @@
-import os
 import discord
+import os
 from modules.helpers import ABS_PATH, make_embed
 from discord.ext import commands
-import os
 
 
 class Help(commands.Cog, name='help'):
@@ -10,11 +9,12 @@ class Help(commands.Cog, name='help'):
         self.client = client
 
     @commands.command(
+        name='help_command',  # Renamed from 'help' to 'help_command'
         brief="Lists commands and gives info.",
-        usage="help *command",
+        usage="help_command *command",
         hidden=True
     )
-    async def help(self, ctx, request=None):
+    async def help_command(self, ctx, request=None):  # Renamed from 'help' to 'help_command'
         if not request:
             embed = make_embed(title="Commands")
             commands_list = [
@@ -39,7 +39,7 @@ class Help(commands.Cog, name='help'):
         else:
             com = self.client.get_command(request)
             if not com:
-                await ctx.invoke(self.client.get_command('help'))
+                await ctx.invoke(self.client.get_command('help_command'))
                 return
             embed = make_embed(
                 title=com.name, description=com.brief, footer="* optional"
@@ -59,5 +59,5 @@ class Help(commands.Cog, name='help'):
         await self.client.logout()
 
 
-def setup(client):
-    client.add_cog(Help(client))
+async def setup(client: commands.Bot):
+    await client.add_cog(Help(client))

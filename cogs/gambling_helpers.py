@@ -69,5 +69,8 @@ class GamblingHelpers(commands.Cog, name='General'):
             )
         await ctx.send(embed=embed)
 
-def setup(client: commands.Bot):
-    client.add_cog(GamblingHelpers(client))
+async def setup(client: commands.Bot):
+    if not client.get_command('leaderboard'):
+        await client.add_cog(GamblingHelpers(client))
+    else:
+        print("Command 'leaderboard' is already registered.")

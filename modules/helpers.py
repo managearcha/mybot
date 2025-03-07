@@ -18,8 +18,11 @@ os.chdir(Path(__file__).parent.parent)
 ABS_PATH = Path(os.getcwd())
 COG_FOLDER = os.path.join(ABS_PATH, 'cogs/')
 
-with open(os.path.join(ABS_PATH.parent, 'config.yml'),  # type:ignore
-            'r', encoding='utf-8') as f:
+config_path = os.path.join(ABS_PATH, 'config.yml')
+if not os.path.exists(config_path):
+    raise FileNotFoundError(f"No such file or directory: '{config_path}'")
+
+with open(config_path, 'r', encoding='utf-8') as f:
     config = yaml.safe_load(f.read()).get('bot', {})
 
 TOKEN = config.get('token')

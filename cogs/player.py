@@ -70,8 +70,8 @@ class Player(commands.Cog):
         # ...existing code...
         pass
 
-    @commands.command(name='leaderboard')
-    async def leaderboard(self, ctx, leaderboard: str, global_: str = None):
+    @commands.command(name='leaderboard_player')  # Renamed from 'leaderboard' to 'leaderboard_player'
+    async def leaderboard_player(self, ctx, leaderboard: str, global_: str = None):  # Renamed from 'leaderboard' to 'leaderboard_player'
         """Show the leaderboard for a game!"""
         # ...existing code...
         pass
